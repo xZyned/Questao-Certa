@@ -1,5 +1,6 @@
 
 import { FC } from 'react';
+import { Link } from 'react-router-dom';
 
 const Header: FC = () => {
   return (
@@ -11,6 +12,21 @@ const Header: FC = () => {
           </svg>
           <h1 className="text-xl md:text-2xl font-bold text-white">Questão Certa</h1>
         </div>
+        
+        <nav>
+          <ul className="flex space-x-6">
+            <li>
+              <Link to="/" className="text-white hover:text-blue-100 transition-colors font-medium">
+                Início
+              </Link>
+            </li>
+            <li>
+              <Link to="/templates" className="text-white hover:text-blue-100 transition-colors font-medium">
+                Modelos de Prova
+              </Link>
+            </li>
+          </ul>
+        </nav>
       </div>
     </header>
   );
