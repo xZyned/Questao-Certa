@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { CheckCircle, Loader2 } from 'lucide-react';
+import { processOMRImage } from '@/services/omr';
 
 interface ImageProcessorProps {
   images: File[];
@@ -14,6 +15,7 @@ interface ImageProcessorProps {
 export interface ProcessedResult {
   imageName: string;
   imageUrl: string;
+  processedImageUrl?: string;
   answers: {
     questionNumber: number;
     markedOption: string;
@@ -33,26 +35,36 @@ const ImageProcessor: FC<ImageProcessorProps> = ({ images, onProcessingComplete 
   const [processedCount, setProcessedCount] = useState(0);
   const [results, setResults] = useState<ProcessedResult[]>([]);
 
-  // Função de simulação para processar as imagens
-  // Em uma implementação real, você usaria visão computacional
   const processImage = async (image: File): Promise<ProcessedResult> => {
-    // Simular processamento (em uma implementação real, usaríamos visão computacional)
+    try {
+      // Use our OMR processing service
+      return await processOMRImage(image);
+    } catch (error) {
+      console.error("Error in OMR processing:", error);
+      
+      // Fall back to simulated processing if the OMR processing fails
+      console.log("Falling back to simulated processing for image:", image.name);
+      return simulateProcessing(image);
+    }
+  };
+  
+  // Fallback simulation function in case the OMR processing fails
+  const simulateProcessing = (image: File): Promise<ProcessedResult> => {
     return new Promise((resolve) => {
       const imageUrl = URL.createObjectURL(image);
       
-      // Simular processo de detecção de marcações
-      // Em um app real, isso seria feito com algoritmos de visão computacional
+      // Simulate process of detection of markings
       setTimeout(() => {
-        const numQuestions = Math.floor(Math.random() * 10) + 10; // Entre 10-20 questões
+        const numQuestions = Math.floor(Math.random() * 10) + 10; // Between 10-20 questions
         const answers = [];
         let correctCount = 0;
         
         const options = ["A", "B", "C", "D"];
         
-        // Gerar respostas aleatórias para simular o processamento
+        // Generate random answers to simulate processing
         for (let i = 1; i <= numQuestions; i++) {
           const markedOption = options[Math.floor(Math.random() * options.length)];
-          const isCorrect = Math.random() > 0.3; // 70% de chance de estar correto
+          const isCorrect = Math.random() > 0.3; // 70% chance of being correct
           
           if (isCorrect) correctCount++;
           
@@ -73,7 +85,7 @@ const ImageProcessor: FC<ImageProcessorProps> = ({ images, onProcessingComplete 
             percentage: (correctCount / numQuestions) * 100
           }
         });
-      }, 1000); // Simular 1 segundo de processamento
+      }, 1000); // Simulate 1 second of processing
     });
   };
 

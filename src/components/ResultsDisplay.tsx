@@ -40,13 +40,26 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({ results }) => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="flex flex-col">
                   <h3 className="text-lg font-medium mb-2">Imagem Analisada</h3>
-                  <div className="bg-gray-100 rounded-lg p-2 overflow-hidden flex-1">
+                  <div className="bg-gray-100 rounded-lg p-2 overflow-hidden">
                     <img
                       src={result.imageUrl}
                       alt={`Gabarito ${result.imageName}`}
-                      className="w-full h-auto max-h-[400px] object-contain"
+                      className="w-full h-auto max-h-[250px] object-contain"
                     />
                   </div>
+                  
+                  {result.processedImageUrl && (
+                    <div className="mt-4">
+                      <h3 className="text-lg font-medium mb-2">Imagem Processada</h3>
+                      <div className="bg-gray-100 rounded-lg p-2 overflow-hidden">
+                        <img
+                          src={result.processedImageUrl}
+                          alt={`Gabarito Processado ${result.imageName}`}
+                          className="w-full h-auto max-h-[250px] object-contain"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-4">
@@ -89,11 +102,15 @@ const ResultsDisplay: FC<ResultsDisplayProps> = ({ results }) => {
                         >
                           <span className="font-medium">Q{answer.questionNumber}:</span>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono">{answer.markedOption}</span>
-                            {answer.isCorrect ? (
-                              <Check className="h-4 w-4 text-green-600" />
+                            <span className="font-mono">{answer.markedOption || '-'}</span>
+                            {answer.markedOption ? (
+                              answer.isCorrect ? (
+                                <Check className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <X className="h-4 w-4 text-red-600" />
+                              )
                             ) : (
-                              <X className="h-4 w-4 text-red-600" />
+                              <span className="text-gray-400 text-xs">Sem resposta</span>
                             )}
                           </div>
                         </div>

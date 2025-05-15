@@ -7,28 +7,38 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileText, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { generateTemplate, saveTemplate } from '@/services/omr/templateGenerator';
 
 const Templates = () => {
   const [questionCount, setQuestionCount] = useState<string>("10");
   const { toast } = useToast();
   
   const handleDownload = () => {
-    // In a real implementation, this would generate and download the PDF
-    // For demo purposes, we'll just show a toast notification
-    toast({
-      title: "Download iniciado",
-      description: `Modelo de prova com ${questionCount} questões será baixado em instantes.`,
-    });
-    
-    // Simulate download delay
-    setTimeout(() => {
-      // Here we'd typically trigger a real file download
-      // For demo purposes, we'll just show another toast
+    try {
+      // Generate the template with jsPDF
+      const doc = generateTemplate({
+        questionCount: parseInt(questionCount),
+        optionsPerQuestion: ['A', 'B', 'C', 'D'],
+        title: 'Questão Certa - Folha de Respostas',
+        subtitle: `Gabarito de Múltipla Escolha - ${questionCount} questões`
+      });
+      
+      // Save the template
+      saveTemplate(doc, `gabarito-${questionCount}-questoes.pdf`);
+      
       toast({
         title: "Download concluído",
-        description: "Arquivo baixado com sucesso!",
+        description: `Modelo de prova com ${questionCount} questões foi baixado com sucesso.`,
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error generating template:', error);
+      
+      toast({
+        title: "Erro ao gerar modelo",
+        description: "Houve um problema ao gerar o modelo de prova. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -72,6 +82,7 @@ const Templates = () => {
                       <SelectItem value="10">10 questões</SelectItem>
                       <SelectItem value="15">15 questões</SelectItem>
                       <SelectItem value="20">20 questões</SelectItem>
+                      <SelectItem value="30">30 questões</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
